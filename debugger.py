@@ -16,7 +16,7 @@ def run(filename, lines):
             bp = p.get_breaks(filename, line)[-1]
             print "Breakpoint %d at %s:%d" % (bp.number, bp.file, bp.line)
 
-    p.run("from " + get_module(filename) + " import * " + find_main(filename))
+    p.run("from runpy import run_module; run_module('"+get_module(filename)+"', None, '__main__', True)")
 
 
 def get_module(filename):
