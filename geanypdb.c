@@ -167,9 +167,9 @@ static void run_pdb(char* file_path, const char* command)
     if (pid == 0)
     {
         int ret = 0;
-        char *cmd[] = {"", "debugger.py", file_path, breaks};
+        char *cmd[] = {"", file_path, breaks};
 
-        ret = execv("/usr/bin/python", cmd);
+        ret = execv("terminal.sh", cmd);
 
         if (ret == -1)
             show_error("Error creating the process");
@@ -202,14 +202,6 @@ static void on_winpdb_item_activate(GtkMenuItem *menuitem, gpointer gdata)
     GeanyDocument* current = save_current_file();
     run_debugger(current->real_path, PATH_TO_WINPDB);
 }
-
-/*static void breakpoints_set(ScintillaObject* sci, int line)
-{
-    const char* break_point = "import pdb; pdb.set_trace()\n";
-    scintilla_send_message(sci, SCI_GOTOLINE, line, 0);
-    scintilla_send_message(sci, SCI_ADDTEXT, strlen(break_point), (sptr_t)break_point);
-}*/
-
 void breakpoints_delete_all(ScintillaObject* sci)
 {
     scintilla_send_message(sci, SCI_MARKERDELETEALL, -1, 0);
@@ -277,11 +269,7 @@ static void make_ui()
 
     /*Hardcoded tab of notebook*/
     /*gtk_notebook_set_current_page((GtkNotebook*)geany->main_widgets->message_window_notebook, 4);*/
-
-
 }
-
-
 
 /* Called by Geany to initialize the plugin.
  * Note: data is the same as geany_data. */

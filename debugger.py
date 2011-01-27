@@ -16,27 +16,12 @@ def run(filename, lines):
             bp = p.get_breaks(filename, line)[-1]
             print "Breakpoint %d at %s:%d" % (bp.number, bp.file, bp.line)
 
-    p.run("from runpy import run_module; run_module('"+get_module(filename)+"', None, '__main__', True)")
+    p.run("from runpy import run_module; run_module('" + get_module(filename) + "', None, '__main__', True)")
 
 
 def get_module(filename):
 
     return filename.rsplit("/")[-1][:-3]
-
-
-def find_main(file):
-
-    f = open(file, 'r')
-    s = f.read()
-    index = s.find("__name__")
-    begin = s.find(":", index)
-    end = s.find("\n\n", begin+2)
-    f.close()
-    statments = s[begin + len(":"):end].split("\n")
-    script = ""
-    for st in statments:
-        script += st.strip() + ";"
-    return script
 
 
 def main():
