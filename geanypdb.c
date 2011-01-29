@@ -157,9 +157,9 @@ static void run_debugger(char* file_path, const char* command)
             show_error("Error creating the process");
     }
 }
-static void run_pdb(char* file_path, const char* command)
+static void run_pdb(char* path)
 {
-    int pid;
+    int pid, i;
     /* fork for winpdb process */
     pid = fork();
 
@@ -167,12 +167,13 @@ static void run_pdb(char* file_path, const char* command)
     if (pid == 0)
     {
         int ret = 0;
-        char *cmd[] = {"", file_path, breaks};
+        char *cmd[] = {"terminal.sh", breaks, path};
 
         ret = execv("terminal.sh", cmd);
 
         if (ret == -1)
             show_error("Error creating the process");
+
     }
 }
 GeanyDocument* save_current_file()
@@ -210,36 +211,47 @@ int breakpoints_get(ScintillaObject* sci, int line)
 {
     return scintilla_send_message(sci, SCI_MARKERGET, line, 0) > 0;
 }
-static void _set_array(int number)
+static void _set_array(char* path, int number)
 {
     char* string = malloc(10);
     sprintf(string, "%d", number);
+
+    strcat(breaks, path);
+    strcat(breaks, ":");
+
     strcat(breaks, string);
     strcat(breaks, ",");
     free(string);
 }
-static void get_breaks()
+static void get_breaks(GeanyDocument* doc)
 {
-    GeanyDocument* current = document_get_current();
     int i;
 
-    ScintillaObject* sci = (ScintillaObject*)current->editor->sci;
+    ScintillaObject* sci = (ScintillaObject*)doc->editor->sci;
 
     for (i = 0; i < 10; i++)
     {
         if(breakpoints_get(sci, i))
         {
-            _set_array(i+1);
+            _set_array(doc->real_path, i+1);
         }
     }
     scintilla_send_message(sci, SCI_MARKERSETBACK, 0, 128 | 128 | 128);
 }
-
+static void get_documents_breaks()
+{
+    int i;
+    GeanyDocument* doc;
+    for (i=0; ((doc = document_get_from_page(i)) != NULL); i++)
+    {
+        get_breaks(doc);
+    }
+}
 static void on_pdb_item_activate(GtkMenuItem *menuitem, gpointer gdata)
 {
-    get_breaks();
+    get_documents_breaks();
     GeanyDocument* current = save_current_file();
-    run_pdb(current->real_path, "./debugger.py");
+    run_pdb(current->real_path);
 }
 
 static void add_item_menu(GtkWidget* menu, const char* item_text, void* callback)
