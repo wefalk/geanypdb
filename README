@@ -1,0 +1,6 @@
+GeanyPDB is a little plugin to improve support of pdb and winpdb on Geany.
+It implements a couple of maybe useful functions:
+
+	*  Integration with winpdb
+
+	*  Integration with the python classic debbuger, PDB. 
