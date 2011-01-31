@@ -175,8 +175,10 @@ static void run_pdb(char* path)
             show_error("Error creating the process");
 
     }
+    for (i = 0; i<1000; i++)
+        breaks[i] = (char)0;
 }
-GeanyDocument* save_current_file()
+static GeanyDocument* save_current_file()
 {
     /* get the current active document */
     GeanyDocument* current = document_get_current();
@@ -197,7 +199,6 @@ GeanyDocument* save_current_file()
     }
     return current;
 }
-
 static void on_winpdb_item_activate(GtkMenuItem *menuitem, gpointer gdata)
 {
     GeanyDocument* current = save_current_file();
@@ -209,7 +210,7 @@ void breakpoints_delete_all(ScintillaObject* sci)
 }
 int breakpoints_get(ScintillaObject* sci, int line)
 {
-    return scintilla_send_message(sci, SCI_MARKERGET, line, 0) > 0;
+    return scintilla_send_message(sci, SCI_MARKERGET, line, 0);
 }
 static void _set_array(char* path, int number)
 {
@@ -226,17 +227,19 @@ static void _set_array(char* path, int number)
 static void get_breaks(GeanyDocument* doc)
 {
     int i;
-
+    int count;
     ScintillaObject* sci = (ScintillaObject*)doc->editor->sci;
+    count = scintilla_send_message(sci, SCI_GETLINECOUNT, 0, 0);
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < count; i++)
     {
         if(breakpoints_get(sci, i))
         {
             _set_array(doc->real_path, i+1);
+            //scintilla_send_message(sci, SCI_MARKERDEFINE, 1, SC_MARK_BACKGROUND);
+            //scintilla_send_message(sci, SCI_MARKERSETBACK, 1, 0 | 255 | 0);
         }
     }
-    scintilla_send_message(sci, SCI_MARKERSETBACK, 0, 128 | 128 | 128);
 }
 static void get_documents_breaks()
 {
@@ -279,7 +282,6 @@ static void make_ui()
     /* make the menu item sensitive only when documents are open */
     ui_add_document_sensitive(root);
 
-    /*Hardcoded tab of notebook*/
     /*gtk_notebook_set_current_page((GtkNotebook*)geany->main_widgets->message_window_notebook, 4);*/
 }
 

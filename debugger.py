@@ -27,6 +27,7 @@ def get_module(filename):
 
 def main():
 
+    print sys.argv
     breaks = sys.argv[1]
     main_file = sys.argv[2]
 
