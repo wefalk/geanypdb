@@ -1,5 +1,16 @@
 ============
+Dependencies
+============
+
+Geany >= 0.18
+libgtk2.0-dev
+
+============
 Installation
 ============
+
+simply run:
+
+~$ sudo sh install.sh
 
 
