@@ -1,0 +1,1 @@
+A Python Debugger (PDB and WinPDB) Integration plugin for the Geany IDE!
